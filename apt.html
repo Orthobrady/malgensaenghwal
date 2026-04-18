@@ -225,23 +225,21 @@ async function fetchData() {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const ym = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`;
     try {
-      const url = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev?serviceKey=${SERVICE_KEY}&LAWD_CD=${selectedRegion.code}&DEAL_YMD=${ym}&numOfRows=500&pageNo=1`;
+      const url = `https://apt-proxy.brmfbeomsu.workers.dev/?LAWD_CD=${selectedRegion.code}&DEAL_YMD=${ym}`;
       const res = await fetch(url);
-      const text = await res.text();
-      const xml = new DOMParser().parseFromString(text, 'text/xml');
-      const items = xml.querySelectorAll('item');
+      const items = await res.json();
       items.forEach(item => {
-        const name = item.querySelector('아파트')?.textContent?.trim() || '';
+        const name = item.name || '';
         if (name.includes(aptName)) {
           allItems.push({
             name,
-            price: item.querySelector('거래금액')?.textContent?.trim() || '0',
-            area: item.querySelector('전용면적')?.textContent?.trim() || '0',
-            floor: item.querySelector('층')?.textContent?.trim() || '0',
+            price: item.price || '0',
+            area: item.area || '0',
+            floor: item.floor || '0',
             year: d.getFullYear(),
             month: d.getMonth()+1,
-            day: item.querySelector('일')?.textContent?.trim() || '0',
-            dong: item.querySelector('법정동')?.textContent?.trim() || '',
+            day: item.day || '0',
+            dong: item.dong || '',
           });
         }
       });
