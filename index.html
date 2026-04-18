@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>맑은생활연구소 🥔</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Nanum Gothic', sans-serif;
+  background: #fdf6e3;
+  overflow-x: hidden;
+}
+
+/* ── 마퀴 ── */
+.marquee-bar { background:#4a2c0a; color:#f5c842; font-family:'Black Han Sans',sans-serif; font-size:13px; padding:7px 0; overflow:hidden; white-space:nowrap; }
+.marquee-inner { display:inline-block; animation:marquee 22s linear infinite; }
+@keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ── 헤더 ── */
+header { background:#2d6a2d; padding:22px 20px 16px; text-align:center; border-bottom:6px solid #4a2c0a; }
+.logo { font-family:'Black Han Sans',sans-serif; font-size:clamp(26px,7vw,50px); color:#f5c842; text-shadow:3px 3px 0 #4a2c0a; display:inline-block; animation:wobble 3s ease-in-out infinite; }
+@keyframes wobble { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
+.logo-sub { color:#b8f5b8; font-size:13px; margin-top:4px; font-weight:800; letter-spacing:2px; }
+
+/* ── 네비 ── */
+nav { background:#f5c842; border-bottom:4px solid #4a2c0a; display:flex; justify-content:center; flex-wrap:wrap; position:sticky; top:0; z-index:100; }
+nav a { font-family:'Black Han Sans',sans-serif; font-size:14px; color:#4a2c0a; text-decoration:none; padding:11px 16px; border-right:2px solid rgba(74,44,10,.2); transition:.15s; white-space:nowrap; }
+nav a:hover, nav a.active { background:#4a2c0a; color:#f5c842; }
+
+/* ── 페이지 ── */
+.page { display:none; }
+.page.active { display:block; }
+
+/* ── 히어로 ── */
+.hero { background:linear-gradient(135deg,#fff9e6,#fde8b0); padding:44px 20px; text-align:center; border-bottom:4px dashed #c49a6c; }
+.hero-potato { font-size:clamp(60px,14vw,100px); display:block; animation:bounce 1.6s ease-in-out infinite; filter:drop-shadow(0 8px 16px rgba(74,44,10,.2)); }
+@keyframes bounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-12px) scale(1.05)} }
+.hero-title { font-family:'Black Han Sans',sans-serif; font-size:clamp(20px,5vw,36px); color:#4a2c0a; margin:16px 0 8px; line-height:1.35; }
+.hero-title .hl { color:#e63946; display:inline-block; animation:shake .5s ease-in-out infinite; }
+@keyframes shake { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+.hero-desc { color:#8B5E3C; font-size:clamp(13px,2.8vw,15px); max-width:480px; margin:0 auto 22px; line-height:1.8; font-weight:700; }
+.hero-btn { display:inline-block; background:#4a2c0a; color:#f5c842; font-family:'Black Han Sans',sans-serif; font-size:17px; padding:13px 34px; border-radius:4px; text-decoration:none; border:3px solid #4a2c0a; box-shadow:4px 4px 0 #c49a6c; transition:.15s; cursor:pointer; }
+.hero-btn:hover { transform:translate(2px,2px); box-shadow:2px 2px 0 #c49a6c; }
+
+/* ── 공통 섹션 ── */
+.section { max-width:960px; margin:0 auto; padding:36px 20px; }
+.section-title { font-family:'Black Han Sans',sans-serif; font-size:clamp(18px,4vw,26px); color:#4a2c0a; border-left:6px solid #2d6a2d; padding-left:14px; margin-bottom:22px; }
+
+/* ── 카테고리 탭 ── */
+.cat-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+.cat-tab { font-family:'Black Han Sans',sans-serif; font-size:15px; padding:9px 20px; border:3px solid #4a2c0a; background:white; color:#4a2c0a; border-radius:4px; cursor:pointer; transition:.15s; box-shadow:3px 3px 0 #c49a6c; }
+.cat-tab:hover, .cat-tab.active { background:#4a2c0a; color:#f5c842; transform:translate(1px,1px); box-shadow:2px 2px 0 #c49a6c; }
+
+/* ── 상품 그리드 ── */
+.products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:18px; }
+.product-card { background:white; border:3px solid #4a2c0a; border-radius:8px; overflow:hidden; box-shadow:4px 4px 0 #c49a6c; transition:.15s; }
+.product-card:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 #c49a6c; }
+.product-img { font-size:58px; text-align:center; padding:22px; border-bottom:3px solid #4a2c0a; }
+.product-img.agri { background:linear-gradient(135deg,#fde8b0,#f5c842); }
+.product-img.misc { background:linear-gradient(135deg,#e0e8ff,#b0c4ff); }
+.product-img.medical { background:linear-gradient(135deg,#d4f0d4,#a0d8a0); }
+.product-info { padding:14px; }
+.product-name { font-family:'Black Han Sans',sans-serif; font-size:15px; color:#4a2c0a; margin-bottom:5px; }
+.product-desc { font-size:12px; color:#777; margin-bottom:9px; line-height:1.6; }
+.product-price { font-family:'Black Han Sans',sans-serif; font-size:20px; color:#e63946; }
+.product-btn { display:block; margin-top:9px; background:#2d6a2d; color:white; text-align:center; font-weight:800; font-size:13px; padding:8px; border-radius:4px; text-decoration:none; transition:.15s; cursor:pointer; border:none; width:100%; font-family:'Nanum Gothic',sans-serif; }
+.product-btn:hover { background:#4a2c0a; }
+
+/* ── 원장소개 ── */
+.profile-card { background:white; border:3px solid #4a2c0a; border-radius:8px; padding:26px; box-shadow:6px 6px 0 #c49a6c; display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap; }
+.profile-emoji { font-size:68px; flex-shrink:0; }
+.profile-info h3 { font-family:'Black Han Sans',sans-serif; font-size:21px; color:#4a2c0a; margin-bottom:10px; }
+.profile-info p { color:#555; font-size:14px; line-height:1.9; }
+.badge { display:inline-block; font-size:11px; font-weight:800; padding:2px 8px; border-radius:20px; margin:2px; color:white; }
+.badge.green { background:#2d6a2d; }
+.badge.red { background:#e63946; }
+.badge.brown { background:#4a2c0a; }
+.badge.blue { background:#1d6fa4; }
+
+/* ── 게시판 공통 ── */
+.board-tabs { display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap; }
+.board-tab { font-family:'Black Han Sans',sans-serif; font-size:15px; padding:9px 22px; border:3px solid #4a2c0a; background:white; color:#4a2c0a; border-radius:4px; cursor:pointer; transition:.15s; box-shadow:3px 3px 0 #c49a6c; }
+.board-tab:hover, .board-tab.active { background:#4a2c0a; color:#f5c842; }
+.board-section { display:none; }
+.board-section.active { display:block; }
+
+/* 자유게시판 */
+.post-list { background:white; border:3px solid #4a2c0a; border-radius:8px; overflow:hidden; box-shadow:4px 4px 0 #c49a6c; }
+.post-item { display:flex; align-items:center; gap:12px; padding:13px 16px; border-bottom:1px solid #eee; cursor:pointer; transition:.1s; }
+.post-item:hover { background:#fffbee; }
+.post-item:last-child { border-bottom:none; }
+.post-num { font-size:12px; color:#aaa; width:28px; text-align:center; flex-shrink:0; }
+.post-title-text { flex:1; font-size:14px; color:#333; font-weight:700; }
+.post-meta { font-size:11px; color:#aaa; flex-shrink:0; }
+.post-write-btn { display:inline-block; margin-bottom:14px; background:#2d6a2d; color:white; font-family:'Black Han Sans',sans-serif; font-size:14px; padding:9px 20px; border-radius:4px; border:none; cursor:pointer; box-shadow:3px 3px 0 #1a4a1a; }
+.post-write-btn:hover { background:#4a2c0a; }
+
+/* 글쓰기 폼 */
+.write-form { background:white; border:3px solid #4a2c0a; border-radius:8px; padding:22px; box-shadow:4px 4px 0 #c49a6c; margin-bottom:18px; display:none; }
+.write-form.open { display:block; }
+.form-row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.form-row input { font-family:'Nanum Gothic',sans-serif; border:2px solid #c49a6c; border-radius:4px; padding:8px 12px; font-size:14px; outline:none; }
+.form-row input:focus { border-color:#2d6a2d; }
+.form-row input.nick { width:120px; }
+.form-row input.subject { flex:1; min-width:180px; }
+.form-textarea { width:100%; font-family:'Nanum Gothic',sans-serif; border:2px solid #c49a6c; border-radius:4px; padding:10px 12px; font-size:14px; outline:none; height:100px; resize:vertical; margin-bottom:10px; }
+.form-textarea:focus { border-color:#2d6a2d; }
+.form-submit { background:#4a2c0a; color:#f5c842; font-family:'Black Han Sans',sans-serif; font-size:14px; border:none; padding:9px 22px; border-radius:4px; cursor:pointer; }
+.form-submit:hover { background:#2d6a2d; }
+.form-cancel { background:#ccc; color:#333; font-family:'Black Han Sans',sans-serif; font-size:14px; border:none; padding:9px 18px; border-radius:4px; cursor:pointer; margin-left:8px; }
+
+/* 글 상세보기 */
+.post-detail { background:white; border:3px solid #4a2c0a; border-radius:8px; padding:22px; box-shadow:4px 4px 0 #c49a6c; display:none; }
+.post-detail.open { display:block; }
+.post-detail-title { font-family:'Black Han Sans',sans-serif; font-size:20px; color:#4a2c0a; margin-bottom:6px; }
+.post-detail-meta { font-size:12px; color:#aaa; margin-bottom:14px; border-bottom:2px solid #eee; padding-bottom:10px; }
+.post-detail-body { font-size:14px; line-height:1.9; color:#333; white-space:pre-wrap; }
+.back-btn { display:inline-block; margin-bottom:14px; background:#eee; color:#333; font-family:'Black Han Sans',sans-serif; font-size:13px; padding:7px 16px; border-radius:4px; border:none; cursor:pointer; }
+.back-btn:hover { background:#c49a6c; color:white; }
+
+/* Q&A */
+.qa-list { display:flex; flex-direction:column; gap:12px; }
+.qa-item { background:white; border:3px solid #4a2c0a; border-radius:8px; overflow:hidden; box-shadow:3px 3px 0 #c49a6c; }
+.qa-question { padding:14px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+.qa-question:hover { background:#fffbee; }
+.qa-q-label { font-family:'Black Han Sans',sans-serif; font-size:13px; color:#1d6fa4; margin-right:8px; }
+.qa-q-text { font-size:14px; color:#333; flex:1; font-weight:700; }
+.qa-meta { font-size:11px; color:#aaa; margin-left:10px; flex-shrink:0; }
+.qa-toggle { font-size:18px; color:#c49a6c; flex-shrink:0; margin-left:8px; transition:.2s; }
+.qa-answer { display:none; background:#f8fdf8; border-top:2px solid #ddd; padding:14px 16px; }
+.qa-answer.open { display:block; }
+.qa-a-label { font-family:'Black Han Sans',sans-serif; font-size:13px; color:#2d6a2d; margin-right:8px; }
+.qa-a-text { font-size:14px; color:#444; line-height:1.8; }
+
+/* 방명록 */
+.guestbook { background:white; border:3px solid #4a2c0a; border-radius:8px; padding:20px; box-shadow:6px 6px 0 #c49a6c; }
+.gb-entry { border-bottom:1px dashed #c49a6c; padding:12px 0; font-size:14px; }
+.gb-entry:last-child { border-bottom:none; }
+.gb-nick { font-weight:800; color:#2d6a2d; margin-right:8px; }
+.gb-msg { color:#444; }
+.gb-form { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+.gb-form input, .gb-form textarea { font-family:'Nanum Gothic',sans-serif; border:2px solid #c49a6c; border-radius:4px; padding:8px 12px; font-size:14px; outline:none; }
+.gb-form input { width:110px; }
+.gb-form textarea { flex:1; min-width:160px; resize:none; height:40px; }
+.gb-form button { background:#4a2c0a; color:#f5c842; font-family:'Black Han Sans',sans-serif; font-size:14px; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
+.gb-form button:hover { background:#2d6a2d; }
+
+/* ── 인용구 ── */
+.quote-section { background:#4a2c0a; color:#fdf6e3; text-align:center; padding:38px 20px; }
+.quote-section p { font-family:'Black Han Sans',sans-serif; font-size:clamp(15px,4vw,24px); line-height:1.9; max-width:580px; margin:0 auto; }
+.quote-section span { color:#f5c842; }
+
+/* ── 푸터 ── */
+footer { background:#4a2c0a; color:rgba(255,255,255,.55); text-align:center; padding:22px 20px; font-size:12px; line-height:2.1; }
+footer strong { color:#f5c842; }
+
+/* ── 반짝이 ── */
+.sparkle { position:fixed; pointer-events:none; font-size:20px; animation:sp 1s ease-out forwards; z-index:9999; }
+@keyframes sp { 0%{transform:scale(0) rotate(0);opacity:1} 100%{transform:scale(1.5) rotate(180deg) translateY(-40px);opacity:0} }
+</style>
+</head>
+<body>
+
+<div class="marquee-bar">
+  <div class="marquee-inner">
+    🥔 맑은생활연구소 &nbsp;|&nbsp; 수술하고 퇴근하면 감자 포장합니다 &nbsp;|&nbsp; 🍈 참외도 팝니다 &nbsp;|&nbsp; 🦾 어깨 아프면 보조기도 삼 &nbsp;|&nbsp; 뼈 고치는 의사가 땅에서 나는 걸 팝니다 &nbsp;|&nbsp; 반품은 정중히 거절... 은 아니고 받아드립니다 &nbsp;|&nbsp; 🥔 맑은생활연구소 &nbsp;|&nbsp; 수술하고 퇴근하면 감자 포장합니다 &nbsp;|&nbsp; 🍈 참외도 팝니다 &nbsp;|&nbsp; 🦾 어깨 아프면 보조기도 삼 &nbsp;|&nbsp; 뼈 고치는 의사가 땅에서 나는 걸 팝니다 &nbsp;|&nbsp; 반품은 정중히 거절... 은 아니고 받아드립니다 &nbsp;|&nbsp;
+  </div>
+</div>
+
+<header>
+  <div class="logo">🥔 맑은생활연구소</div>
+  <div class="logo-sub">정형외과 전임의가 운영하는 종합 쇼핑몰</div>
+</header>
+
+<nav>
+  <a href="#" class="active" onclick="showPage('home',this)">🏠 홈</a>
+  <a href="#" onclick="showPage('shop',this)">🛒 상품</a>
+  <a href="#" onclick="showPage('about',this)">👨‍⚕️ 원장소개</a>
+  <a href="#" onclick="showPage('board',this)">📋 게시판</a>
+  <a href="#" onclick="showPage('guestbook',this)">📝 방명록</a>
+</nav>
+
+<!-- 홈 -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <span class="hero-potato">🥔</span>
+    <h1 class="hero-title">뼈 고치는 의사가<br><span class="hl">뭐든 팝니다.</span></h1>
+    <p class="hero-desc">
+      낮에는 어깨 수술, 밤에는 감자 포장<br>
+      참외도 팔고, 보조기도 팔고<br>
+      잡화도 팝니다. 이유는 없습니다.<br>
+      <strong>그냥 맑게 살고 싶어서요.</strong>
+    </p>
+    <button class="hero-btn" onclick="showPage('shop', document.querySelector('nav a:nth-child(2)'))">🛒 구경하러 가기</button>
+  </div>
+  <div class="quote-section">
+    <p>"어깨 아프면 저한테 오고<br><span>감자·참외 먹고 싶으면 여기서 사고</span><br>보조기 필요하면 그것도 삽니다.<br>뭐든 있습니다. 아마도."</p>
+  </div>
+</div>
+
+<!-- 상품 -->
+<div id="page-shop" class="page">
+  <div class="section">
+    <div class="section-title">🛒 상품 목록</div>
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="filterCat('all',this)">전체</button>
+      <button class="cat-tab" onclick="filterCat('agri',this)">🥬 농산물</button>
+      <button class="cat-tab" onclick="filterCat('misc',this)">🎒 잡화</button>
+      <button class="cat-tab" onclick="filterCat('medical',this)">🦾 의료보조기</button>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" data-cat="agri">
+        <div class="product-img agri">🥔</div>
+        <div class="product-info">
+          <div class="product-name">국내산 감자 3kg</div>
+          <div class="product-desc">의사가 직접 고른 감자.<br>뼈만큼 튼튼한 놈들로 골랐습니다.</div>
+          <div class="product-price">₩12,900</div>
+          <button class="product-btn" onclick="alert('쿠팡에서 구매 가능합니다 🥔')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="agri">
+        <div class="product-img agri">🥔🥔</div>
+        <div class="product-info">
+          <div class="product-name">감자 5kg 특대</div>
+          <div class="product-desc">혼자 다 드시겠다고요?<br>정형외과 의사로서... 권장은 못 하겠습니다.</div>
+          <div class="product-price">₩19,900</div>
+          <button class="product-btn" onclick="alert('쿠팡에서 구매 가능합니다 🥔')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="agri">
+        <div class="product-img agri">🍈</div>
+        <div class="product-info">
+          <div class="product-name">성주 참외 5kg</div>
+          <div class="product-desc">감자만 팔기엔 여름이 너무 아깝습니다.<br>달고 시원합니다. 보장합니다. (의사 보장)</div>
+          <div class="product-price">₩22,000</div>
+          <button class="product-btn" onclick="alert('준비중입니다 🍈')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="agri">
+        <div class="product-img agri">🧅</div>
+        <div class="product-info">
+          <div class="product-name">양파 3kg</div>
+          <div class="product-desc">눈물 나는 건 양파 때문입니다.<br>반품 때문이 아닙니다.</div>
+          <div class="product-price">₩8,900</div>
+          <button class="product-btn" onclick="alert('준비중입니다 🧅')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="misc">
+        <div class="product-img misc">🎒</div>
+        <div class="product-info">
+          <div class="product-name">패션 가방 (준비중)</div>
+          <div class="product-desc">감자 팔다 보니 가방도 팔고 싶어졌습니다.<br>논리는 없습니다.</div>
+          <div class="product-price">준비중</div>
+          <button class="product-btn" onclick="alert('오픈 예정입니다!')">오픈예정</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="misc">
+        <div class="product-img misc">🕶️</div>
+        <div class="product-info">
+          <div class="product-name">선글라스 (준비중)</div>
+          <div class="product-desc">수술실은 밝은데 밖은 더 밝습니다.<br>눈 보호는 중요합니다.</div>
+          <div class="product-price">준비중</div>
+          <button class="product-btn" onclick="alert('오픈 예정입니다!')">오픈예정</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="medical">
+        <div class="product-img medical">🦾</div>
+        <div class="product-info">
+          <div class="product-name">어깨 보호대</div>
+          <div class="product-desc">어깨 전문의가 직접 고른 보호대입니다.<br>이건 진짜 믿어도 됩니다.</div>
+          <div class="product-price">₩38,000</div>
+          <button class="product-btn" onclick="alert('준비중입니다 🦾')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="medical">
+        <div class="product-img medical">🦿</div>
+        <div class="product-info">
+          <div class="product-name">무릎 보호대</div>
+          <div class="product-desc">어깨 전문인데 무릎도 압니다.<br>같은 뼈입니다. (어느 정도는)</div>
+          <div class="product-price">₩25,000</div>
+          <button class="product-btn" onclick="alert('준비중입니다 🦿')">구매하기</button>
+        </div>
+      </div>
+      <div class="product-card" data-cat="medical">
+        <div class="product-img medical">🩹</div>
+        <div class="product-info">
+          <div class="product-name">손목 보호대</div>
+          <div class="product-desc">감자 포장하다가 손목 망가진 원장이<br>직접 쓰는 제품입니다.</div>
+          <div class="product-price">₩18,000</div>
+          <button class="product-btn" onclick="alert('준비중입니다 🩹')">구매하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 원장소개 -->
+<div id="page-about" class="page">
+  <div class="section">
+    <div class="section-title">👨‍⚕️ 원장 소개</div>
+    <div class="profile-card">
+      <div class="profile-emoji">🥼</div>
+      <div class="profile-info">
+        <h3>맑은생활연구소 원장</h3>
+        <p>
+          <span class="badge green">정형외과 전임의</span>
+          <span class="badge red">어깨 전문</span>
+          <span class="badge brown">감자 판매업</span>
+          <span class="badge blue">의료보조기 딜러</span>
+          <br><br>
+          낮에는 서울에서 어깨 MRI 판독하고<br>
+          밤에는 감자·참외 박스 포장합니다.<br>
+          손목이 버텨주는 한 계속할 생각입니다.<br><br>
+          처음엔 그냥 농산물 팔아봐야지 했는데<br>
+          지금은 반품관리, 광고세팅, 상품 소싱까지 하고 있습니다.<br>
+          이게 맞나 싶지만 맞습니다.<br><br>
+          <strong>"뼈는 제가 고치고, 나머지는 여기서 사세요."</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 게시판 -->
+<div id="page-board" class="page">
+  <div class="section">
+    <div class="section-title">📋 게시판</div>
+    <div class="board-tabs">
+      <button class="board-tab active" onclick="switchBoard('free',this)">💬 자유게시판</button>
+      <button class="board-tab" onclick="switchBoard('qa',this)">❓ Q&amp;A</button>
+    </div>
+    <div id="board-free" class="board-section active">
+      <button class="post-write-btn" onclick="toggleWriteForm('free')">✏️ 글쓰기</button>
+      <div class="write-form" id="write-form-free">
+        <div class="form-row">
+          <input class="nick" type="text" id="free-nick" placeholder="닉네임" maxlength="10">
+          <input class="subject" type="text" id="free-subject" placeholder="제목">
+        </div>
+        <textarea class="form-textarea" id="free-body" placeholder="내용을 입력하세요..."></textarea>
+        <button class="form-submit" onclick="submitPost('free')">등록</button>
+        <button class="form-cancel" onclick="toggleWriteForm('free')">취소</button>
+      </div>
+      <div class="post-detail" id="free-detail"></div>
+      <div class="post-list" id="free-list"></div>
+    </div>
+    <div id="board-qa" class="board-section">
+      <button class="post-write-btn" onclick="toggleWriteForm('qa')">✏️ 질문하기</button>
+      <div class="write-form" id="write-form-qa">
+        <div class="form-row">
+          <input class="nick" type="text" id="qa-nick" placeholder="닉네임" maxlength="10">
+          <input class="subject" type="text" id="qa-subject" placeholder="질문 제목">
+        </div>
+        <textarea class="form-textarea" id="qa-body" placeholder="상품 문의, 배송 문의 등 무엇이든 물어보세요!"></textarea>
+        <button class="form-submit" onclick="submitQA()">질문 등록</button>
+        <button class="form-cancel" onclick="toggleWriteForm('qa')">취소</button>
+      </div>
+      <div class="qa-list" id="qa-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 방명록 -->
+<div id="page-guestbook" class="page">
+  <div class="section">
+    <div class="section-title">📝 방명록</div>
+    <div class="guestbook">
+      <div id="gb-entries">
+        <div class="gb-entry"><span class="gb-nick">감자덕후</span><span class="gb-msg">의사가 감자를 판다니... 이 나라의 미래가 밝습니다 🥔</span></div>
+        <div class="gb-entry"><span class="gb-nick">단톡방홍보받음</span><span class="gb-msg">친구한테 링크 받았는데 홈피가 너무 웃겨서 감자 삼 ㅋㅋ</span></div>
+        <div class="gb-entry"><span class="gb-nick">어깨환자</span><span class="gb-msg">선생님 진료실에서 감자 팔고 있다는 거 알고 있었습니다</span></div>
+        <div class="gb-entry"><span class="gb-nick">참외기대중</span><span class="gb-msg">참외 언제 나와요? 진지하게 기다립니다</span></div>
+      </div>
+      <div class="gb-form">
+        <input type="text" id="gb-nick" placeholder="닉네임" maxlength="10">
+        <textarea id="gb-msg" placeholder="한마디 남겨주세요 🥔"></textarea>
+        <button onclick="addGuestbook()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>맑은생활연구소</strong> | 통신판매업신고: 준비중 | 사업자등록번호: 준비중<br>
+  의사가 감자를 팝니다. 참외도 팝니다. 보조기도 팝니다. 이상하지 않습니다.<br>
+  © 2026 맑은생활연구소 🥔 All rights reserved
+</footer>
+
+<script>
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function filterCat(cat, el) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.product-card').forEach(c => {
+    c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+function switchBoard(name, el) {
+  document.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.board-section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('board-' + name).classList.add('active');
+}
+
+let freePosts = [
+  { num:3, nick:'단골손님', title:'감자 진짜 맛있었어요', body:'저번에 산 3kg 감자 진짜 맛있었습니다\n다음엔 5kg 살게요', date:'2026.04.15' },
+  { num:2, nick:'참외기대중', title:'참외 언제 나와요?', body:'홈피 봤는데 참외도 파신다고요?\n빨리 올려주세요 여름 오기 전에요', date:'2026.04.14' },
+  { num:1, nick:'원장', title:'맑은생활연구소 오픈했습니다', body:'안녕하세요 맑은생활연구소입니다.\n낮에는 어깨 수술하고 밤에는 감자 팝니다.\n잘 부탁드립니다 🥔', date:'2026.04.13' },
+];
+
+function renderFreeList() {
+  document.getElementById('free-list').innerHTML = freePosts.slice().reverse().map(p =>
+    `<div class="post-item" onclick="showPostDetail(${p.num})">
+      <span class="post-num">${p.num}</span>
+      <span class="post-title-text">${p.title}</span>
+      <span class="post-meta">${p.nick} | ${p.date}</span>
+    </div>`
+  ).join('');
+}
+
+function showPostDetail(num) {
+  const p = freePosts.find(x => x.num === num);
+  if (!p) return;
+  const detail = document.getElementById('free-detail');
+  detail.innerHTML = `
+    <button class="back-btn" onclick="closeDetail()">← 목록으로</button>
+    <div class="post-detail-title">${p.title}</div>
+    <div class="post-detail-meta">${p.nick} | ${p.date}</div>
+    <div class="post-detail-body">${p.body}</div>`;
+  detail.classList.add('open');
+  document.getElementById('free-list').style.display = 'none';
+  document.querySelector('#board-free .post-write-btn').style.display = 'none';
+}
+
+function closeDetail() {
+  document.getElementById('free-detail').classList.remove('open');
+  document.getElementById('free-list').style.display = '';
+  document.querySelector('#board-free .post-write-btn').style.display = '';
+}
+
+function toggleWriteForm(type) {
+  document.getElementById('write-form-' + type).classList.toggle('open');
+}
+
+function submitPost(type) {
+  const nick = document.getElementById(type+'-nick').value.trim();
+  const subject = document.getElementById(type+'-subject').value.trim();
+  const body = document.getElementById(type+'-body').value.trim();
+  if (!nick || !subject || !body) { alert('닉네임, 제목, 내용을 모두 입력해주세요!'); return; }
+  const today = new Date();
+  const date = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+  freePosts.push({ num: freePosts.length + 1, nick, title: subject, body, date });
+  document.getElementById(type+'-nick').value = '';
+  document.getElementById(type+'-subject').value = '';
+  document.getElementById(type+'-body').value = '';
+  document.getElementById('write-form-'+type).classList.remove('open');
+  renderFreeList();
+}
+
+let qaItems = [
+  { nick:'감자왕', question:'감자 신선도는 어떻게 관리하나요?', answer:'입고 즉시 서늘한 곳에 보관하고 2주 이내 발송합니다. 의사 기준으로 엄격하게 관리합니다 🥔', date:'2026.04.15', answered:true },
+  { nick:'보조기궁금', question:'어깨 보호대 사이즈 선택 어떻게 하나요?', answer:'S/M/L 사이즈 기준은 상품 페이지 참고해주세요. 어깨 전문의가 직접 골랐으니 믿어도 됩니다.', date:'2026.04.14', answered:true },
+  { nick:'참외팬', question:'참외는 언제 판매 시작하나요?', answer:null, date:'2026.04.16', answered:false },
+];
+
+function renderQA() {
+  document.getElementById('qa-list').innerHTML = qaItems.map((q, i) => `
+    <div class="qa-item">
+      <div class="qa-question" onclick="toggleQA(${i})">
+        <span class="qa-q-label">Q</span>
+        <span class="qa-q-text">${q.question}</span>
+        <span class="qa-meta">${q.nick} | ${q.date}</span>
+        <span class="qa-toggle" id="qa-toggle-${i}">${q.answered ? '▾' : '▸'}</span>
+      </div>
+      <div class="qa-answer${q.answered?' open':''}" id="qa-ans-${i}">
+        <span class="qa-a-label">A</span>
+        <span class="qa-a-text">${q.answered ? q.answer : '<span style="color:#aaa">답변 준비중입니다.</span>'}</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function toggleQA(i) {
+  const ans = document.getElementById('qa-ans-' + i);
+  const tog = document.getElementById('qa-toggle-' + i);
+  ans.classList.toggle('open');
+  tog.textContent = ans.classList.contains('open') ? '▾' : '▸';
+}
+
+function submitQA() {
+  const nick = document.getElementById('qa-nick').value.trim();
+  const subject = document.getElementById('qa-subject').value.trim();
+  const body = document.getElementById('qa-body').value.trim();
+  if (!nick || !subject || !body) { alert('닉네임, 제목, 내용을 모두 입력해주세요!'); return; }
+  const today = new Date();
+  const date = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+  qaItems.unshift({ nick, question: subject + ' — ' + body, answer: null, date, answered: false });
+  document.getElementById('qa-nick').value = '';
+  document.getElementById('qa-subject').value = '';
+  document.getElementById('qa-body').value = '';
+  document.getElementById('write-form-qa').classList.remove('open');
+  renderQA();
+  alert('질문이 등록되었습니다! 원장이 답변 드리겠습니다 🥔');
+}
+
+function addGuestbook() {
+  const nick = document.getElementById('gb-nick').value.trim();
+  const msg = document.getElementById('gb-msg').value.trim();
+  if (!nick || !msg) { alert('닉네임이랑 내용 둘 다 써주세요!'); return; }
+  const entry = document.createElement('div');
+  entry.className = 'gb-entry';
+  entry.innerHTML = `<span class="gb-nick">${nick}</span><span class="gb-msg">${msg}</span>`;
+  document.getElementById('gb-entries').prepend(entry);
+  document.getElementById('gb-nick').value = '';
+  document.getElementById('gb-msg').value = '';
+}
+
+document.addEventListener('click', function(e) {
+  const emojis = ['🥔','✨','🌿','💥','⭐','🍈'];
+  const el = document.createElement('div');
+  el.className = 'sparkle';
+  el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  el.style.left = (e.clientX - 16) + 'px';
+  el.style.top = (e.clientY - 16) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+});
+
+renderFreeList();
+renderQA();
+</script>
+</body>
+</html>
