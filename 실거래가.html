@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아파트 실거래가 조회</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nanum Gothic',sans-serif; background:#f5f7fa; min-height:100vh; }
+header { background:#1a3a5c; padding:24px 20px; text-align:center; border-bottom:4px solid #f5c842; }
+header h1 { font-family:'Black Han Sans',sans-serif; font-size:clamp(22px,5vw,34px); color:#f5c842; text-shadow:2px 2px 0 rgba(0,0,0,0.3); }
+header p { color:#a8c4e0; font-size:13px; margin-top:6px; }
+.container { max-width:800px; margin:0 auto; padding:28px 16px; }
+
+.search-wrap { background:white; border-radius:14px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:20px; }
+.search-row { display:flex; gap:10px; margin-bottom:10px; }
+.search-input-wrap { position:relative; flex:1; }
+.search-input-wrap input {
+  width:100%; font-family:'Nanum Gothic',sans-serif;
+  border:2px solid #e0e0e0; border-radius:8px;
+  padding:13px 16px; font-size:15px; outline:none; transition:.15s;
+}
+.search-input-wrap input:focus { border-color:#1a3a5c; }
+.search-btn {
+  background:#1a3a5c; color:white;
+  font-family:'Black Han Sans',sans-serif; font-size:16px;
+  border:none; padding:13px 26px; border-radius:8px;
+  cursor:pointer; transition:.15s; white-space:nowrap;
+}
+.search-btn:hover { background:#f5c842; color:#1a3a5c; }
+.search-btn:disabled { background:#ccc; cursor:not-allowed; color:white; }
+.hint { font-size:12px; color:#aaa; }
+
+/* 지역 선택 */
+.region-select-wrap { margin-top:12px; display:none; }
+.region-select-wrap label { font-size:12px; font-weight:800; color:#666; display:block; margin-bottom:6px; }
+.region-grid { display:flex; gap:8px; flex-wrap:wrap; }
+.region-btn {
+  font-family:'Nanum Gothic',sans-serif; font-size:13px; font-weight:800;
+  border:2px solid #e0e0e0; background:white; color:#555;
+  padding:7px 14px; border-radius:20px; cursor:pointer; transition:.15s;
+}
+.region-btn:hover, .region-btn.active { background:#1a3a5c; color:white; border-color:#1a3a5c; }
+
+/* 평수 필터 */
+.filter-wrap { background:white; border-radius:10px; padding:16px 20px; box-shadow:0 2px 10px rgba(0,0,0,0.06); margin-bottom:16px; display:none; }
+.filter-wrap label { font-size:12px; font-weight:800; color:#666; display:block; margin-bottom:10px; }
+.area-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.area-btn {
+  font-family:'Nanum Gothic',sans-serif; font-size:13px; font-weight:800;
+  border:2px solid #e0e0e0; background:white; color:#555;
+  padding:7px 14px; border-radius:20px; cursor:pointer; transition:.15s;
+}
+.area-btn:hover { border-color:#1a3a5c; color:#1a3a5c; }
+.area-btn.active { background:#1a3a5c; color:white; border-color:#1a3a5c; }
+
+/* 결과 */
+.result-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+.result-title { font-family:'Black Han Sans',sans-serif; font-size:18px; color:#1a3a5c; }
+.result-count { font-size:13px; color:#888; background:#f0f0f0; padding:4px 12px; border-radius:20px; }
+
+.table-wrap { background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08); overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:420px; }
+thead tr { background:#1a3a5c; }
+thead th { color:white; font-family:'Black Han Sans',sans-serif; font-size:13px; padding:13px 12px; text-align:center; }
+tbody tr { border-bottom:1px solid #f5f5f5; transition:.1s; }
+tbody tr:hover { background:#f8faff; }
+tbody tr:last-child { border-bottom:none; }
+tbody td { padding:13px 12px; font-size:14px; text-align:center; color:#333; }
+.price-cell { font-family:'Black Han Sans',sans-serif; font-size:17px; color:#e63946; }
+.apt-name { font-weight:800; color:#1a3a5c; text-align:left; }
+.dong-text { color:#aaa; font-size:11px; font-weight:400; }
+.area-badge { background:#e8f4e8; color:#2d6a2d; font-weight:800; border-radius:4px; padding:3px 8px; font-size:12px; display:inline-block; }
+.floor-text { color:#666; font-size:13px; }
+.date-text { color:#888; font-size:13px; }
+.new-badge { background:#e63946; color:white; font-size:10px; font-weight:800; padding:1px 6px; border-radius:10px; margin-left:4px; vertical-align:middle; }
+
+.status-box { background:white; border-radius:12px; padding:50px 20px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+.status-box .emoji { font-size:52px; margin-bottom:14px; display:block; }
+.status-box p { color:#888; font-size:15px; line-height:1.9; }
+.status-box strong { color:#1a3a5c; }
+.loading-spinner { display:inline-block; width:36px; height:36px; border:4px solid #f0f0f0; border-top:4px solid #1a3a5c; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:14px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.error-box { background:#fff5f5; border:2px solid #ffcccc; border-radius:10px; padding:16px 20px; color:#e63946; font-weight:800; margin-bottom:16px; text-align:center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏢 아파트 실거래가 조회</h1>
+  <p>국토교통부 실거래가 · 실제 체결된 가격만 보여드립니다</p>
+</header>
+
+<div class="container">
+  <div class="search-wrap">
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <input type="text" id="aptInput" placeholder="아파트 이름 입력 (예: 래미안, 헬리오시티)" autocomplete="off">
+      </div>
+      <button class="search-btn" id="searchBtn" onclick="startSearch()">🔍 검색</button>
+    </div>
+    <div class="hint">💡 아파트 이름 입력 후 지역을 선택해주세요</div>
+
+    <div class="region-select-wrap" id="regionWrap">
+      <label>📍 지역 선택</label>
+      <div class="region-grid" id="regionGrid"></div>
+    </div>
+  </div>
+
+  <div class="filter-wrap" id="filterWrap">
+    <label>📐 평수 필터</label>
+    <div class="area-btns" id="areaBtns"></div>
+  </div>
+
+  <div id="resultArea">
+    <div class="status-box">
+      <span class="emoji">🏢</span>
+      <p>아파트 이름을 검색해보세요.<br><strong>예) 래미안, 자이, 푸르지오, 헬리오시티</strong></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const SERVICE_KEY = 'de24ebd74fda845d39cb6ba4e738a6c6e4d9cdfb5029362343865c59d1d8d979';
+
+const REGIONS = [
+  // 서울
+  {name:'강남구', code:'11680'}, {name:'서초구', code:'11650'}, {name:'송파구', code:'11710'},
+  {name:'강동구', code:'11740'}, {name:'마포구', code:'11440'}, {name:'용산구', code:'11170'},
+  {name:'성동구', code:'11200'}, {name:'광진구', code:'11215'}, {name:'영등포구 (양평동·여의도·목동)', code:'11560'},
+  {name:'동작구', code:'11590'}, {name:'관악구', code:'11620'}, {name:'강서구', code:'11500'},
+  {name:'양천구 (목동)', code:'11470'}, {name:'구로구', code:'11530'}, {name:'금천구', code:'11545'},
+  {name:'노원구', code:'11350'}, {name:'도봉구', code:'11320'}, {name:'강북구', code:'11305'},
+  {name:'성북구', code:'11290'}, {name:'은평구', code:'11380'}, {name:'서대문구', code:'11410'},
+  {name:'종로구', code:'11110'}, {name:'중구', code:'11140'}, {name:'동대문구', code:'11230'},
+  {name:'중랑구', code:'11260'},
+  // 경기
+  {name:'분당구', code:'41135'}, {name:'수지구', code:'41465'}, {name:'기흥구', code:'41463'},
+  {name:'처인구', code:'41461'}, {name:'일산동구', code:'41285'}, {name:'일산서구', code:'41287'},
+  {name:'덕양구', code:'41281'}, {name:'과천시', code:'41290'}, {name:'하남시', code:'41450'},
+  {name:'남양주시', code:'41360'}, {name:'화성시', code:'41590'}, {name:'광명시', code:'41210'},
+  {name:'부천시', code:'41190'}, {name:'안양 동안구', code:'41173'}, {name:'안양 만안구', code:'41171'},
+  {name:'수원 영통구', code:'41117'}, {name:'수원 팔달구', code:'41115'}, {name:'수원 권선구', code:'41113'},
+  {name:'성남 수정구', code:'41131'}, {name:'성남 중원구', code:'41133'}, {name:'구리시', code:'41310'},
+  {name:'의정부시', code:'41150'}, {name:'김포시', code:'41570'}, {name:'시흥시', code:'41390'},
+  {name:'광주시', code:'41610'}, {name:'파주시', code:'41480'}, {name:'양주시', code:'41630'},
+  // 인천
+  {name:'인천 연수구', code:'28185'}, {name:'인천 남동구', code:'28200'}, {name:'인천 부평구', code:'28237'},
+  {name:'인천 서구', code:'28260'}, {name:'인천 계양구', code:'28245'}, {name:'인천 미추홀구', code:'28177'},
+  // 부산
+  {name:'해운대구', code:'26350'}, {name:'부산진구', code:'26230'}, {name:'동래구', code:'26260'},
+  {name:'남구(부산)', code:'26290'}, {name:'수영구', code:'26500'}, {name:'연제구', code:'26470'},
+  // 대구·대전·광주
+  {name:'수성구', code:'27260'}, {name:'달서구', code:'27290'}, {name:'유성구', code:'30200'},
+  {name:'광산구', code:'29200'},
+];
+
+// 지역 버튼 렌더
+const regionGrid = document.getElementById('regionGrid');
+REGIONS.forEach(r => {
+  const btn = document.createElement('button');
+  btn.className = 'region-btn';
+  btn.textContent = r.name;
+  btn.onclick = () => selectRegion(r, btn);
+  regionGrid.appendChild(btn);
+});
+
+let selectedRegion = null;
+let allData = [];
+let selectedArea = 'all';
+
+function selectRegion(r, btn) {
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedRegion = r;
+  fetchData();
+}
+
+function startSearch() {
+  const apt = document.getElementById('aptInput').value.trim();
+  if (!apt) { alert('아파트 이름을 입력해주세요!'); return; }
+  document.getElementById('regionWrap').style.display = 'block';
+  document.getElementById('resultArea').innerHTML = `
+    <div class="status-box">
+      <span class="emoji">📍</span>
+      <p><strong>"${apt}"</strong>이(가) 있는 지역을 선택해주세요.</p>
+    </div>`;
+  document.getElementById('filterWrap').style.display = 'none';
+  selectedRegion = null;
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+}
+
+function formatPrice(p) {
+  if (!p) return '-';
+  const n = parseInt(p.replace(/,/g,''));
+  if (n >= 10000) {
+    const uk = Math.floor(n / 10000);
+    const rest = n % 10000;
+    return rest > 0 ? `${uk}억 ${rest.toLocaleString()}만` : `${uk}억`;
+  }
+  return `${n.toLocaleString()}만`;
+}
+
+function pyeong(area) {
+  return Math.round(parseFloat(area) / 3.3);
+}
+
+async function fetchData() {
+  if (!selectedRegion) return;
+  const aptName = document.getElementById('aptInput').value.trim();
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.textContent = '조회 중...';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="status-box">
+      <div class="loading-spinner"></div>
+      <p>${selectedRegion.name}에서 <strong>"${aptName}"</strong> 찾는 중...</p>
+    </div>`;
+
+  // 최근 6개월치 데이터 수집
+  const now = new Date();
+  let allItems = [];
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`;
+    try {
+      const url = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev?serviceKey=${SERVICE_KEY}&LAWD_CD=${selectedRegion.code}&DEAL_YMD=${ym}&numOfRows=500&pageNo=1`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const xml = new DOMParser().parseFromString(text, 'text/xml');
+      const items = xml.querySelectorAll('item');
+      items.forEach(item => {
+        const name = item.querySelector('아파트')?.textContent?.trim() || '';
+        if (name.includes(aptName)) {
+          allItems.push({
+            name,
+            price: item.querySelector('거래금액')?.textContent?.trim() || '0',
+            area: item.querySelector('전용면적')?.textContent?.trim() || '0',
+            floor: item.querySelector('층')?.textContent?.trim() || '0',
+            year: d.getFullYear(),
+            month: d.getMonth()+1,
+            day: item.querySelector('일')?.textContent?.trim() || '0',
+            dong: item.querySelector('법정동')?.textContent?.trim() || '',
+          });
+        }
+      });
+    } catch(e) {}
+  }
+
+  btn.disabled = false; btn.textContent = '🔍 검색';
+
+  if (allItems.length === 0) {
+    document.getElementById('resultArea').innerHTML = `
+      <div class="status-box"><span class="emoji">🔍</span>
+      <p>${selectedRegion.name}에서 <strong>"${aptName}"</strong>을 찾을 수 없어요.<br>다른 지역을 선택해보세요.</p></div>`;
+    document.getElementById('filterWrap').style.display = 'none';
+    return;
+  }
+
+  // 날짜 최신순 정렬
+  allItems.sort((a, b) => {
+    const da = new Date(a.year, a.month-1, parseInt(a.day));
+    const db = new Date(b.year, b.month-1, parseInt(b.day));
+    return db - da;
+  });
+
+  allData = allItems;
+  selectedArea = 'all';
+
+  // 평수 목록 추출
+  const areas = [...new Set(allItems.map(d => pyeong(d.area)))].sort((a,b) => a-b);
+  const areaBtns = document.getElementById('areaBtns');
+  areaBtns.innerHTML = `<button class="area-btn active" onclick="filterArea('all', this)">전체</button>` +
+    areas.map(a => `<button class="area-btn" onclick="filterArea(${a}, this)">${a}평</button>`).join('');
+  document.getElementById('filterWrap').style.display = 'block';
+
+  renderResult();
+}
+
+function filterArea(area, btn) {
+  document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedArea = area;
+  renderResult();
+}
+
+function renderResult() {
+  const aptName = document.getElementById('aptInput').value.trim();
+  let filtered = selectedArea === 'all'
+    ? allData
+    : allData.filter(d => pyeong(d.area) === selectedArea);
+
+  const top10 = filtered.slice(0, 10);
+  const now = new Date();
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-meta">
+      <div class="result-title">🏢 ${aptName} · ${selectedRegion.name}</div>
+      <div class="result-count">최근 ${top10.length}건</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>아파트명</th>
+          <th>거래금액</th>
+          <th>전용면적</th>
+          <th>층</th>
+          <th>거래일</th>
+        </tr></thead>
+        <tbody>
+          ${top10.map((d, i) => {
+            const dealDate = new Date(d.year, d.month-1, parseInt(d.day));
+            const diffDays = Math.floor((now - dealDate) / (1000*60*60*24));
+            const isNew = diffDays <= 30;
+            return `<tr>
+              <td class="apt-name">${d.name}${isNew ? '<span class="new-badge">NEW</span>' : ''}<br><span class="dong-text">${d.dong}</span></td>
+              <td class="price-cell">${formatPrice(d.price)}</td>
+              <td><span class="area-badge">${parseFloat(d.area).toFixed(1)}㎡<br><span style="font-size:11px">${pyeong(d.area)}평</span></span></td>
+              <td class="floor-text">${d.floor}층</td>
+              <td class="date-text">${d.year}.${String(d.month).padStart(2,'0')}.${String(d.day).padStart(2,'0')}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+document.getElementById('aptInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startSearch();
+});
+</script>
+</body>
+</html>
