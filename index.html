@@ -291,12 +291,21 @@ async function loadFreePosts() {
   }).join('');
 }
 
+
+function renderBody(text) {
+  return text
+    .replace(/(https?://[^s]+.(jpg|jpeg|png|gif|webp)(?[^s]*)?)/gi, function(url) {
+      return "<br><img src=\"" + url + "\" style=\"max-width:100%;border-radius:8px;margin:8px 0;\" onerror=\"this.style.display=none\"><br>";
+    })
+    .replace(/
+/g, "<br>");
+}
 window.showFreeDetail = function(id, title, nick, date, body) {
   const detail = document.getElementById('free-detail');
   detail.innerHTML = `<button class="back-btn" onclick="closeFreeDetail()">← 목록으로</button>
     <div class="post-detail-title">${title}</div>
     <div class="post-detail-meta">${nick} | ${date}</div>
-    <div class="post-detail-body">${decodeURIComponent(body)}</div>`;
+    <div class="post-detail-body">${renderBody(decodeURIComponent(body))}</div>`;
   detail.classList.add('open');
   document.getElementById('free-list').style.display = 'none';
   document.querySelector('#board-free .post-write-btn').style.display = 'none';
