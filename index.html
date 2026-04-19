@@ -292,13 +292,14 @@ async function loadFreePosts() {
 }
 
 
+
 function renderBody(text) {
+  var imgRegex = /(https?:\/\/\S+\.(?:jpg|jpeg|png|gif|webp)(\?\S*)?)/gi;
   return text
-    .replace(/(https?://[^s]+.(jpg|jpeg|png|gif|webp)(?[^s]*)?)/gi, function(url) {
-      return "<br><img src=\"" + url + "\" style=\"max-width:100%;border-radius:8px;margin:8px 0;\" onerror=\"this.style.display=none\"><br>";
+    .replace(imgRegex, function(url) {
+      return '<br><img src="' + url + '" style="max-width:100%;border-radius:8px;margin:8px 0;"><br>';
     })
-    .replace(/
-/g, "<br>");
+    .replace(/\n/g, '<br>');
 }
 window.showFreeDetail = function(id, title, nick, date, body) {
   const detail = document.getElementById('free-detail');
