@@ -1,2 +1,0 @@
-# malgensaenghwal
-e-commerce
